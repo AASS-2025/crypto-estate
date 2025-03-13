@@ -2,16 +2,26 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: [
-    '@nuxt/ui',
-    '@nuxt/eslint'
-  ],
+  modules: ["@nuxt/ui", "@nuxt/eslint", "@nuxtjs/supabase"],
 
-  css: ['~/assets/css/main.css'],
+  css: ["~/assets/css/main.css"],
 
   future: {
-    compatibilityVersion: 4
+    compatibilityVersion: 4,
+  },
+  supabase: {
+    redirect: false,
+    redirectOptions: {
+      exclude: ["/api/properties"],
+      callback: "",
+      login: "",
+    },
   },
 
-  compatibilityDate: '2024-11-27'
-})
+  compatibilityDate: "2024-11-27",
+  runtimeConfig: {
+    public: {
+      redirectUrl: "",
+    },
+  },
+});

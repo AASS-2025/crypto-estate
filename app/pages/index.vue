@@ -1,25 +1,22 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-4 h-screen">
-    <h1 class="font-bold text-2xl text-(--ui-primary)">
-      Nuxt UI v3
-    </h1>
+    <h1 class="font-bold text-2xl text-(--ui-primary)">Crypto Estate</h1>
 
     <div class="flex items-center gap-2">
-      <UButton
-        label="Documentation"
-        icon="i-lucide-square-play"
-        to="https://ui3.nuxt.dev/getting-started/installation/nuxt"
-        target="_blank"
-      />
+      <UButton label="Sell" icon="mdi:cash" to="/sell" />
 
       <UButton
-        label="GitHub"
+        label="Buy"
         color="neutral"
         variant="outline"
-        icon="i-simple-icons-github"
-        to="https://github.com/nuxt/ui"
-        target="_blank"
+        icon="mdi:home-plus-outline"
+        to="/buy"
       />
     </div>
   </div>
 </template>
+<script lang="ts" setup>
+definePageMeta({
+  layout: "landing",
+});
+</script>
