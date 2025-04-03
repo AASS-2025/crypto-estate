@@ -1,10 +1,19 @@
 <template>
-  <div class="w-full flex justify-center items-center">
-    <UButton label="Register Wallet" class="w-1/2" @click="registerWallet" />
+  <div class="w-full flex flex-col justify-center items-center">
+    <UButton
+      :disabled="status === 'success'"
+      label="Register Wallet"
+      class="w-1/2"
+      @click="registerWallet"
+    />
+    <small v-if="status === 'success'" class="text-sm text-gray-200">
+      You already own registered wallet
+    </small>
   </div>
 </template>
 
 <script lang="ts" setup>
+const { status, refresh } = useFetch("/api/wallet");
 const toast = useToast();
 const registerWallet = async () => {
   try {
@@ -24,6 +33,7 @@ const registerWallet = async () => {
     });
     console.error("Error registering wallet:", error);
   }
+  await refresh();
 };
 </script>
 
