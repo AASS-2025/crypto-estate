@@ -10,9 +10,10 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
   supabase: {
+    types: "./shared/types/supabase.types.ts",
     redirect: false,
     redirectOptions: {
-      exclude: ["/api/properties"],
+      exclude: ["*"],
       callback: "",
       login: "",
     },
