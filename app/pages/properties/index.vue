@@ -4,7 +4,10 @@
     <ul>
       <li v-if="status === 'pending'">Loading...</li>
       <li v-if="status === 'error'">Error loading properties</li>
-      <li v-if="status === 'success'">
+      <li v-if="status === 'success' && data">
+        <h2>My Properties</h2>
+        <p>Here are the properties you have listed:</p>
+        <p v-if="data.length === 0">You have not listed any properties yet</p>
         <div v-for="property in data" :key="property.id">
           <h2>{{ property.name }}</h2>
           <p>{{ property.description }}</p>

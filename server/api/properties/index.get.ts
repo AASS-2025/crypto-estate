@@ -104,10 +104,7 @@ export default defineEventHandler(async (event) => {
     address,
   });
   if (resp.realEstateOwners.length !== 1) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Owner not found",
-    });
+    return [];
   }
   return resp.realEstateOwners[0].realEstate;
 });
