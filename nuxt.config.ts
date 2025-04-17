@@ -24,6 +24,6 @@ export default defineNuxtConfig({
     public: {
       redirectUrl: "",
     },
-    gqlHost: "https://4ee05394-2008-481a-8d7b-42b94038e7fd.squids.live/crypto-estate-indexer@v4/api/graphql",
+    gqlHost: "https://api.spacex.land/graphql",
   },
 });
