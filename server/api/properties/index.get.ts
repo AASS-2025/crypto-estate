@@ -65,7 +65,7 @@ type RealEstate = {
 
 type RealEstateOwner = {
   ownerAddress: string;
-  realEstate: RealEstate[];
+  realEstate: RealEstate;
 };
 
 type QueryResponse = {
@@ -105,10 +105,5 @@ export default defineEventHandler(async (event) => {
   const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
     address,
   });
-  const [owner] = resp.realEstateOwners;
-  if (!owner) {
-    return [];
-  }
-  console.log("OWNER:", owner);
-  return owner.realEstate;
+  return resp.realEstateOwners;
 });
