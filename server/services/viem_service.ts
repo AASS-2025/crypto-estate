@@ -1,6 +1,6 @@
-import type { Address } from "viem";
+import type { Address, Hex } from "viem";
 import { createPublicClient, http } from "viem";
-import { generatePrivateKey } from "viem/accounts";
+import { generatePrivateKey, privateKeyToAddress } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import RealEstateABI, {
   REAL_ESTATE_ADDRESS,
@@ -25,5 +25,9 @@ export function useViemService() {
     return generatePrivateKey();
   };
 
-  return { client, getBalance, generateAccount };
+  const getAddress = (privateKey: Hex) => {
+    return privateKeyToAddress(privateKey);
+  };
+
+  return { client, getBalance, generateAccount, getAddress };
 }
