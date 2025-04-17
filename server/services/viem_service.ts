@@ -26,7 +26,7 @@ export function useViemService() {
   };
 
   const getAddress = (privateKey: Hex) => {
-    return privateKeyToAddress(privateKey);
+    return privateKeyToAddress(privateKey).toLowerCase();
   };
 
   return { client, getBalance, generateAccount, getAddress };
