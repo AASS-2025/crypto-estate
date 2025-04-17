@@ -68,6 +68,10 @@ type RealEstateOwner = {
   realEstate: RealEstate[];
 };
 
+type QueryResponse = {
+  realEstateOwners: RealEstateOwner[];
+};
+
 export default defineEventHandler(async (event) => {
   const gqlClient = useGraphQLService();
   const user = await serverSupabaseUser(event);
@@ -96,15 +100,14 @@ export default defineEventHandler(async (event) => {
 
   const address = getAddress(wallet.private_key as Hex);
 
-  const owner = await (gqlClient.query("GetProperties", QUERY, {
+  const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
     address,
-  }) as Promise<RealEstateOwner>);
-  if (!owner) {
+  });
+  if (resp.realEstateOwners.length !== 1) {
     throw createError({
       statusCode: 404,
       statusMessage: "Owner not found",
     });
   }
-  console.log(owner);
-  return owner.realEstate;
+  return resp.realEstateOwners[0].realEstate;
 });

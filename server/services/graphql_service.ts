@@ -1,11 +1,22 @@
+type GraphQLResponse<T> = {
+  data: T;
+  errors?: {
+    message: string;
+    locations: {
+      line: number;
+      column: number;
+    }[];
+  };
+};
+
 export function useGraphQLService() {
   const RUNTIME_CONFIG = useRuntimeConfig();
-  const query = (
+  const query = async <T>(
     operationName: string,
     query: string,
     variables: Record<string, unknown> = {}
   ) => {
-    return $fetch(RUNTIME_CONFIG.gqlHost, {
+    const resp = await $fetch<GraphQLResponse<T>>(RUNTIME_CONFIG.gqlHost, {
       method: "POST",
       body: JSON.stringify({
         operationName,
@@ -16,6 +27,14 @@ export function useGraphQLService() {
         "Content-Type": "application/json",
       },
     });
+    if (resp.errors) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: "GraphQL error",
+        data: resp.errors,
+      });
+    }
+    return resp.data;
   };
 
   return { query };
