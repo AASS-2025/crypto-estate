@@ -17,6 +17,7 @@
         sellable
       />
     </div>
+    <modals-sell-property />
   </div>
 </template>
 <script lang="ts" setup>

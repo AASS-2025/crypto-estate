@@ -1,6 +1,7 @@
 import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
 import type { Hex } from "viem";
 import { useMarketService } from "~~/server/services/market_service";
+import { useRealEstateService } from "~~/server/services/real_estate_service";
 import { useViemService } from "~~/server/services/viem_service";
 import { createOfferValidator } from "~~/server/validators/offer_validator";
 
@@ -35,8 +36,25 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Wallet not found",
     });
   }
-  const { getAccount } = useViemService();
-  const account = getAccount(wallet.private_key as Hex);
+  const { getAccount, getAddress } = useViemService();
   const { createOffer } = useMarketService();
+  const { isApprovedForMarket, approveForMarket } = useRealEstateService();
+
+  const privateKey = wallet.private_key as Hex;
+  const address = getAddress(privateKey);
+  const account = getAccount(privateKey);
+  // Check if is approved for market
+  const isApproved = await isApprovedForMarket(address);
+  if (!isApproved) {
+    // Approve for market
+    const approved = await approveForMarket(account);
+    if (!approved) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: "Failed to approve for market",
+      });
+    }
+  }
+
   return await createOffer(account, tokenId, body.amount);
 });

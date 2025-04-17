@@ -48,6 +48,16 @@ export default [
     type: "error",
   },
   {
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -87,12 +97,7 @@ export default [
         name: "operator",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "approved",
-        type: "bool",
-      },
+      { indexed: false, internalType: "bool", name: "approved", type: "bool" },
     ],
     name: "ApprovalForAll",
     type: "event",
@@ -135,15 +140,24 @@ export default [
       {
         indexed: true,
         internalType: "address",
-        name: "from",
+        name: "previousOwner",
         type: "address",
       },
       {
         indexed: true,
         internalType: "address",
-        name: "to",
+        name: "newOwner",
         type: "address",
       },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "from", type: "address" },
+      { indexed: true, internalType: "address", name: "to", type: "address" },
       {
         indexed: true,
         internalType: "uint256",
@@ -216,17 +230,9 @@ export default [
   {
     inputs: [
       { internalType: "string", name: "_tokenURI", type: "string" },
-      {
-        internalType: "string",
-        name: "_propertyAddress",
-        type: "string",
-      },
+      { internalType: "string", name: "_propertyAddress", type: "string" },
       { internalType: "uint256", name: "_yearBuilt", type: "uint256" },
-      {
-        internalType: "bytes32",
-        name: "_legalDocumentHash",
-        type: "bytes32",
-      },
+      { internalType: "bytes32", name: "_legalDocumentHash", type: "bytes32" },
       { internalType: "uint256", name: "_longitude", type: "uint256" },
       { internalType: "uint256", name: "_latitude", type: "uint256" },
       { internalType: "uint256", name: "_squareMeters", type: "uint256" },
@@ -244,6 +250,13 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
     name: "ownerOf",
     outputs: [{ internalType: "address", name: "", type: "address" }],
@@ -256,18 +269,21 @@ export default [
     outputs: [
       { internalType: "string", name: "propertyAddress", type: "string" },
       { internalType: "uint256", name: "yearBuilt", type: "uint256" },
-      {
-        internalType: "bytes32",
-        name: "legalDocumentHash",
-        type: "bytes32",
-      },
+      { internalType: "bytes32", name: "legalDocumentHash", type: "bytes32" },
       { internalType: "uint256", name: "longitude", type: "uint256" },
       { internalType: "uint256", name: "latitude", type: "uint256" },
-      { internalType: "uint256", name: "sqareMeters", type: "uint256" },
+      { internalType: "uint256", name: "squareMeters", type: "uint256" },
       { internalType: "bool", name: "verified", type: "bool" },
       { internalType: "address", name: "verifier", type: "address" },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -314,6 +330,16 @@ export default [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "uint256", name: "_tokenId", type: "uint256" },
+      { internalType: "string", name: "_tokenURI", type: "string" },
+    ],
+    name: "setTokenURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
@@ -353,22 +379,21 @@ export default [
     type: "function",
   },
   {
+    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       { internalType: "uint256", name: "_tokenId", type: "uint256" },
-      {
-        internalType: "string",
-        name: "_propertyAddress",
-        type: "string",
-      },
+      { internalType: "string", name: "_propertyAddress", type: "string" },
       { internalType: "uint256", name: "_yearBuilt", type: "uint256" },
-      {
-        internalType: "bytes32",
-        name: "_legalDocumentHash",
-        type: "bytes32",
-      },
+      { internalType: "bytes32", name: "_legalDocumentHash", type: "bytes32" },
       { internalType: "uint256", name: "_longitude", type: "uint256" },
       { internalType: "uint256", name: "_latitude", type: "uint256" },
-      { internalType: "uint256", name: "_squereMeters", type: "uint256" },
+      { internalType: "uint256", name: "_squareMeters", type: "uint256" },
     ],
     name: "updateMetadata",
     outputs: [],
@@ -394,4 +419,4 @@ export default [
   },
 ] as const;
 
-export const REAL_ESTATE_ADDRESS = "0x65924e245D46D34763b8CD6Ef5d25473B5060A72";
+export const REAL_ESTATE_ADDRESS = "0x55054C8c6412a19f0e6FbddA91172aBb5917Fa04";
