@@ -1,5 +1,5 @@
 import { serverSupabaseUser } from "#supabase/server";
-import { useViemService } from "~~/server/services/viem_service";
+import { useRealEstateService } from "~~/server/services/real_estate_service";
 
 export default defineEventHandler(async (event) => {
   const user = await serverSupabaseUser(event);
@@ -9,6 +9,6 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Unauthorized",
     });
   }
-  const { getBalance } = useViemService();
+  const { getBalance } = useRealEstateService();
   return getBalance("0x8643eFdC8F334cA8Db3fed16CcFB1Bb0f7b8dd99");
 });

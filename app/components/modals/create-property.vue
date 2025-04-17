@@ -1,6 +1,6 @@
 <template>
-  <UModal class="w-full flex items-center justify-center">
-    <UButton label="Register new property" />
+  <UModal class="flex items-center justify-center">
+    <UButton class="cursor-pointer" label="Register new property" />
     <template #content>
       <UForm
         :schema="schema"

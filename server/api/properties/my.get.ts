@@ -5,35 +5,35 @@ import { useViemService } from "~~/server/services/viem_service";
 import type { ExtendedRealEstateOwner } from "~~/shared/types/property";
 
 const QUERY = `
-query GetProperties {
- realEstateOwners(where: {amount_gt: "0"}) {
-  ownerAddress
-  realEstate {
-    tokenId
-    contractAddress
-    description
-    image
-    latitude
-    legalDocumentHash
-    longitude
-    id
-    name
-    propertyAddress
-    squareMeters
-    tokenUri
-    verified
-    verifier
-    yearBuilt
-    transfers {
-      from
+query GetProperties($address: String){
+  realEstateOwners(where: {ownerAddress_eq: $address}) {
+    ownerAddress
+    realEstate {
+      tokenId
+      contractAddress
+      description
+      image
+      latitude
+      legalDocumentHash
+      longitude
       id
-      txHash
-      timestamp
-      to
-      blockNumber
+      name
+      propertyAddress
+      squareMeters
+      tokenUri
+      verified
+      verifier
+      yearBuilt
+      transfers {
+        from
+        id
+        txHash
+        timestamp
+        to
+        blockNumber
+      }
     }
   }
-}
 }`;
 
 type QueryResponse = {
@@ -68,7 +68,9 @@ export default defineEventHandler(async (event) => {
 
   const address = getAddress(wallet.private_key as Hex);
 
-  const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY);
+  const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
+    address,
+  });
   return resp.realEstateOwners.map((owner) => {
     return {
       ownerAddress: owner.ownerAddress,

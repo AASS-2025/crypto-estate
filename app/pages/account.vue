@@ -1,19 +1,21 @@
 <template>
-  <div class="w-full flex flex-col justify-center items-center">
+  <div class="w-full flex flex-col gap-y-4 justify-center items-center">
+    <h2 class="text-4xl">{{ user?.user_metadata.name }}</h2>
     <UButton
       :disabled="status === 'success'"
-      label="Register Wallet"
-      class="w-1/2"
+      :label="
+        status === 'success'
+          ? 'You already own registered wallet'
+          : 'Register Wallet'
+      "
       @click="registerWallet"
     />
-    <small v-if="status === 'success'" class="text-sm text-gray-200">
-      You already own registered wallet
-    </small>
   </div>
 </template>
 
 <script lang="ts" setup>
 const { status, refresh } = useFetch("/api/wallet");
+const user = useSupabaseUser();
 const toast = useToast();
 const registerWallet = async () => {
   try {

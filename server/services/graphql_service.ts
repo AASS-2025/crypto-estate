@@ -27,6 +27,7 @@ export function useGraphQLService() {
         "Content-Type": "application/json",
       },
     });
+    console.error(resp);
     if (resp.errors) {
       throw createError({
         statusCode: 500,
