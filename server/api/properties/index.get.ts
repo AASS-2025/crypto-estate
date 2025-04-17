@@ -18,7 +18,7 @@ query GetProperties($address: String){
       id
       name
       propertyAddress
-      squereMeters
+      squareMeters
       tokenUri
       verified
       verifier
@@ -105,5 +105,6 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Owner not found",
     });
   }
+  console.log(owner);
   return owner.realEstate;
 });
