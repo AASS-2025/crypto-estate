@@ -100,6 +100,8 @@ export default defineEventHandler(async (event) => {
 
   const address = getAddress(wallet.private_key as Hex);
 
+  console.log("ADDRESS:", address);
+
   const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
     address,
   });
