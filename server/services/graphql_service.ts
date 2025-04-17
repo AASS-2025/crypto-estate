@@ -5,7 +5,7 @@ export function useGraphQLService() {
     query: string,
     variables: Record<string, unknown> = {}
   ) => {
-    return $fetch(RUNTIME_CONFIG.public.gqlHost, {
+    return $fetch(RUNTIME_CONFIG.gqlHost, {
       method: "POST",
       body: JSON.stringify({
         operationName,
