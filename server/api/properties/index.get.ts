@@ -35,6 +35,39 @@ query GetProperties($address: String){
   }
 }`;
 
+type Transfer = {
+  from: string;
+  id: string;
+  txHash: string;
+  timestamp: string;
+  to: string;
+  blockNumber: string;
+};
+
+type RealEstate = {
+  tokenId: string;
+  contractAddress: string;
+  description: string;
+  image: string;
+  latitude: string;
+  legalDocumentHash: string;
+  longitude: string;
+  id: string;
+  name: string;
+  propertyAddress: string;
+  squereMeters: string;
+  tokenUri: string;
+  verified: boolean;
+  verifier: string;
+  yearBuilt: string;
+  transfers: Transfer[];
+};
+
+type RealEstateOwner = {
+  ownerAddress: string;
+  realEstate: RealEstate[];
+};
+
 export default defineEventHandler(async (event) => {
   const gqlClient = useGraphQLService();
   const user = await serverSupabaseUser(event);
@@ -63,5 +96,14 @@ export default defineEventHandler(async (event) => {
 
   const address = getAddress(wallet.private_key as Hex);
 
-  return await gqlClient.query("GetProperties", QUERY, { address });
+  const owner = await (gqlClient.query("GetProperties", QUERY, {
+    address,
+  }) as Promise<RealEstateOwner>);
+  if (!owner) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Owner not found",
+    });
+  }
+  return owner.realEstate;
 });
