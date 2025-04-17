@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       redirectUrl: "",
-      GQL_HOST: "https://api.spacex.land/graphql",
+      gqlHost: "https://api.spacex.land/graphql",
     },
   },
 });
