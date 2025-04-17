@@ -105,8 +105,10 @@ export default defineEventHandler(async (event) => {
   const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
     address,
   });
-  if (resp.realEstateOwners.length !== 1) {
+  const [owner] = resp.realEstateOwners;
+  if (!owner) {
     return [];
   }
-  return resp.realEstateOwners[0].realEstate;
+  console.log("OWNER:", owner);
+  return owner.realEstate;
 });
