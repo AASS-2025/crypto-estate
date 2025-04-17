@@ -17,18 +17,6 @@
         "
         @submit="onSubmit"
       >
-        <UFormField
-          v-if="props.tokenId === undefined"
-          label="Token ID"
-          name="tokenId"
-        >
-          <UInput
-            v-model="state.tokenId"
-            :disabled="loading"
-            type="number"
-            class="w-full"
-          />
-        </UFormField>
         <UFormField label="Property price (ETH)" name="propertyAddress">
           <UInput
             v-model="state.propertyPrice"
@@ -75,6 +63,8 @@ const state = reactive<Schema>({
 const toast = useToast();
 const loading = ref(false);
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  console.log(event.data);
+  console.log(props.tokenId);
   loading.value = true;
   toast.add({
     title: "Creating",

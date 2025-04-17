@@ -53,7 +53,7 @@
     >
       <p class="text-center w-full">Buy</p>
     </UButton>
-    <ModalsSellProperty v-if="property.mine" />
+    <ModalsSellProperty v-if="property.mine" :token-id="Number(property.tokenId)" />
     <template #footer>
       <small> Token ID: {{ property.tokenId }} </small>
     </template>
