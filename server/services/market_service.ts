@@ -38,5 +38,43 @@ export function useMarketService() {
     return resp;
   };
 
-  return { createOffer };
+  const buyOffer = async (account: Account, tokenId: bigint, price: bigint) => {
+    logger.info("Buying offer", {
+      tokenId,
+      price,
+    });
+    const { request } = await client.simulateContract({
+      address: REAL_ESTATE_MARKET_ADDRESS,
+      abi: RealEstateMarketABI,
+      functionName: "buyOffer",
+      args: [tokenId],
+      account,
+      value: price,
+    });
+    const resp = await client.writeContract(request);
+    logger.success("Offer bought", {
+      resp,
+    });
+    return resp;
+  };
+
+  const removeOffer = async (account: Account, tokenId: bigint) => {
+    logger.info("Removing offer", {
+      tokenId,
+    });
+    const { request } = await client.simulateContract({
+      address: REAL_ESTATE_MARKET_ADDRESS,
+      abi: RealEstateMarketABI,
+      functionName: "removeOffer",
+      args: [tokenId],
+      account,
+    });
+    const resp = await client.writeContract(request);
+    logger.success("Offer removed", {
+      resp,
+    });
+    return resp;
+  };
+
+  return { createOffer, buyOffer, removeOffer };
 }

@@ -2,7 +2,7 @@
   <UCard class="w-full">
     <template #header>
       <div class="flex justify-between">
-        <b>Property: {{ property.name ?? "Missing property name" }}</b>
+        <b>{{ property.name ?? "Missing property name" }}</b>
         <span class="flex gap-x-2 items-center">
           <UBadge v-if="mine">Mine</UBadge>
           <UBadge v-if="property.verified" color="secondary">Verified</UBadge>
@@ -36,6 +36,10 @@
             <b>Size:</b>
             <p>{{ property.squareMeters ?? "Missing size" }} m2</p>
           </span>
+          <span class="flex gap-2">
+            <b>Owner:</b>
+            <p>{{ owner }}</p>
+          </span>
         </div>
         <!-- Image col -->
         <div class="w-full flex justify-center">
@@ -52,11 +56,19 @@
       </div>
       <UButton
         v-if="buyable && !mine && price"
-        class="mt-8 w-full text-center"
+        class="mt-8 w-full text-center cursor-pointer"
         color="primary"
         @click="emit('buy')"
       >
         <p class="text-center w-full">Buy {{ weiToEth(price) }} ETH</p>
+      </UButton>
+      <UButton
+        v-if="mine && property.offers.length > 0"
+        class="mt-8 w-full text-center cursor-pointer"
+        color="error"
+        @click="emit('remove-offer')"
+      >
+        <p class="text-center w-full">Remove offer</p>
       </UButton>
       <ModalsSellProperty
         v-if="mine && property.offers.length < 1"
@@ -76,6 +88,7 @@ import { weiToEth } from "~~/shared/utils/eth";
 const emit = defineEmits<{
   (e: "buy"): void;
   (e: "sell"): void;
+  (e: "remove-offer"): void;
 }>();
 
 const props = defineProps<{
@@ -84,6 +97,7 @@ const props = defineProps<{
   mine?: boolean;
   buyable?: boolean;
   sellable?: boolean;
+  owner: string;
 }>();
 
 const imageUrl = computed(() => {

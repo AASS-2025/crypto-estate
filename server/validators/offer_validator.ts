@@ -10,3 +10,14 @@ export const createOfferValidator = zod.object({
     return BigInt(parsed);
   }),
 });
+
+export const buyOfferValidator = zod.object({
+  // Wei String to BigInt
+  price: zod.string().transform((val) => {
+    const parsed = parseInt(val);
+    if (isNaN(parsed)) {
+      throw new Error("Invalid amount");
+    }
+    return BigInt(parsed);
+  }),
+});
