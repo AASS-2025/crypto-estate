@@ -1,6 +1,6 @@
 <template>
-  <UModal class="flex items-center justify-center">
-    <UButton class="cursor-pointer" label="Sell" />
+  <UModal v-model="modalState" class="flex items-center justify-center">
+    <UButton class="cursor-pointer w-full" label="Sell" />
     <template #content>
       <UForm
         :schema="schema"
@@ -28,6 +28,7 @@
         <UButton
           type="submit"
           :disabled="loading"
+          :loading="loading"
           class="w-full cursor-pointer text-center"
         >
           <p class="w-full text-center">Confirm</p>
@@ -39,10 +40,13 @@
 <script lang="ts" setup>
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { ethToWei } from "~~/shared/utils/eth";
 
 const props = defineProps<{
   tokenId?: number;
 }>();
+
+const modalState = ref(false);
 
 const schema = z.object({
   tokenId: z.number().positive({
@@ -72,9 +76,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     color: "info",
   });
   // BigInt amount from ETH to Wei
-  const amount = BigInt(
-    (event.data.propertyPrice * 1e18).toFixed(0)
-  ).toString();
+  const amount = ethToWei(event.data.propertyPrice);
   try {
     const res = await $fetch(`/api/properties/${event.data.tokenId}/sell`, {
       method: "POST",
@@ -84,7 +86,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
     toast.add({
       title: "Success",
-      description: `The form has been submitted. - ${res}`,
+      description: `Offer was created! - Tx hash: ${res}`,
       color: "success",
     });
   } catch (error) {
@@ -95,5 +97,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
   }
   loading.value = false;
+  modalState.value = false;
 }
 </script>

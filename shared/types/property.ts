@@ -23,11 +23,8 @@ export type RealEstate = {
   verified: boolean | null;
   verifier: string | null;
   yearBuilt: string | null;
-  transfers: Transfer[];
-};
-
-export type ExtendedRealEstate = RealEstate & {
-  mine: boolean;
+  transfers: Transfer[] | null;
+  offers: Offer[];
 };
 
 export type RealEstateOwner = {
@@ -35,7 +32,15 @@ export type RealEstateOwner = {
   realEstate: RealEstate;
 };
 
-export type ExtendedRealEstateOwner = {
-  ownerAddress: string;
-  realEstate: ExtendedRealEstate;
+export type Offer = {
+  id: string;
+  price: string;
+  blockNumber: number;
+  seller: string;
+  timestamp: number;
+  txHash: string;
+};
+
+export type OfferWithRealEstate = Offer & {
+  realEstate: RealEstate;
 };

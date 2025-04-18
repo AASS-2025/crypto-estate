@@ -3,7 +3,13 @@
     <template #header>
       <div class="flex justify-between">
         <b>Property: {{ property.name ?? "Missing property name" }}</b>
-        <UBadge v-if="property.mine">Mine</UBadge>
+        <span class="flex gap-x-2 items-center">
+          <UBadge v-if="mine">Mine</UBadge>
+          <UBadge v-if="property.verified" color="secondary">Verified</UBadge>
+          <UBadge v-if="property.offers.length > 0" color="warning">
+            Listed
+          </UBadge>
+        </span>
       </div>
     </template>
     <div class="flex flex-col gap-y-4">
@@ -44,16 +50,19 @@
           />
         </div>
       </div>
+      <UButton
+        v-if="buyable && !mine && price"
+        class="mt-8 w-full text-center"
+        color="primary"
+        @click="emit('buy')"
+      >
+        <p class="text-center w-full">Buy {{ weiToEth(price) }} ETH</p>
+      </UButton>
+      <ModalsSellProperty
+        v-if="mine && property.offers.length < 1"
+        :token-id="Number(property.tokenId)"
+      />
     </div>
-    <UButton
-      v-if="buyable && !property.mine"
-      class="mt-8 w-full text-center"
-      color="primary"
-      @click="emit('buy')"
-    >
-      <p class="text-center w-full">Buy</p>
-    </UButton>
-    <ModalsSellProperty v-if="property.mine" :token-id="Number(property.tokenId)" />
     <template #footer>
       <small> Token ID: {{ property.tokenId }} </small>
     </template>
@@ -61,7 +70,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { ExtendedRealEstate } from "~~/shared/types/property";
+import type { RealEstate } from "~~/shared/types/property";
+import { weiToEth } from "~~/shared/utils/eth";
 
 const emit = defineEmits<{
   (e: "buy"): void;
@@ -69,7 +79,9 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  property: ExtendedRealEstate;
+  property: RealEstate;
+  price?: string;
+  mine?: boolean;
   buyable?: boolean;
   sellable?: boolean;
 }>();

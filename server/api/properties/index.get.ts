@@ -1,43 +1,54 @@
 import { serverSupabaseUser, serverSupabaseClient } from "#supabase/server";
-import type { Hex } from "viem";
 import { useGraphQLService } from "~~/server/services/graphql_service";
-import { useViemService } from "~~/server/services/viem_service";
-import type { ExtendedRealEstateOwner } from "~~/shared/types/property";
+import type { OfferWithRealEstate } from "~~/shared/types/property";
 
 const QUERY = `
-query GetProperties {
- realEstateOwners(where: {amount_gt: "0"}) {
-  ownerAddress
-  realEstate {
-    tokenId
-    contractAddress
-    description
-    image
-    latitude
-    legalDocumentHash
-    longitude
+query GetOffers {
+  offers {
     id
-    name
-    propertyAddress
-    squareMeters
-    tokenUri
-    verified
-    verifier
-    yearBuilt
-    transfers {
-      from
+    price
+    blockNumber
+    seller
+    timestamp
+    txHash
+    realEstate: realEstateId {
       id
-      txHash
-      timestamp
-      to
-      blockNumber
+      name
+      contractAddress
+      propertyAddress
+      squareMeters
+      tokenId
+      verifier
+      verified
+      tokenUri
+      yearBuilt
+      longitude
+      legalDocumentHash
+      latitude
+      image
+      description
+      transfers {
+        blockNumber
+        from
+        id
+        timestamp
+        to
+        txHash
+      }
+      offers {
+        id
+        price
+        blockNumber
+        seller
+        timestamp
+        txHash
+      }
     }
   }
 }
-}`;
-
+`;
 type QueryResponse = {
-  realEstateOwners: ExtendedRealEstateOwner[];
+  offers: OfferWithRealEstate[];
 };
 
 export default defineEventHandler(async (event) => {
@@ -64,18 +75,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { getAddress } = useViemService();
-
-  const address = getAddress(wallet.private_key as Hex);
-
-  const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY);
-  return resp.realEstateOwners.map((owner) => {
-    return {
-      ownerAddress: owner.ownerAddress,
-      realEstate: {
-        ...owner.realEstate,
-        mine: owner.ownerAddress === address,
-      },
-    };
-  });
+  const resp = await gqlClient.query<QueryResponse>("GetOffers", QUERY);
+  return resp.offers;
 });

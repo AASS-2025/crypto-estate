@@ -1,4 +1,6 @@
 import { serverSupabaseUser, serverSupabaseClient } from "#supabase/server";
+import type { Hex } from "viem";
+import { useViemService } from "~~/server/services/viem_service";
 import type { Database } from "~~/shared/types/database";
 
 /**
@@ -25,5 +27,6 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Wallet not found",
     });
   }
-  setResponseStatus(event, 201);
+  const { getAccount } = useViemService();
+  return getAccount(existingWallets.private_key as Hex);
 });

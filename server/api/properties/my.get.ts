@@ -2,13 +2,15 @@ import { serverSupabaseUser, serverSupabaseClient } from "#supabase/server";
 import type { Hex } from "viem";
 import { useGraphQLService } from "~~/server/services/graphql_service";
 import { useViemService } from "~~/server/services/viem_service";
-import type { ExtendedRealEstateOwner } from "~~/shared/types/property";
+import type { RealEstateOwner } from "~~/shared/types/property";
 
 const QUERY = `
 query GetProperties($address: String){
   realEstateOwners(where: {ownerAddress_eq: $address}) {
     ownerAddress
     realEstate {
+      id
+      name
       tokenId
       contractAddress
       description
@@ -16,8 +18,6 @@ query GetProperties($address: String){
       latitude
       legalDocumentHash
       longitude
-      id
-      name
       propertyAddress
       squareMeters
       tokenUri
@@ -32,12 +32,20 @@ query GetProperties($address: String){
         to
         blockNumber
       }
+      offers {
+        id
+        price
+        blockNumber
+        seller
+        timestamp
+        txHash
+      }
     }
   }
 }`;
 
 type QueryResponse = {
-  realEstateOwners: ExtendedRealEstateOwner[];
+  realEstateOwners: RealEstateOwner[];
 };
 
 export default defineEventHandler(async (event) => {
@@ -71,13 +79,5 @@ export default defineEventHandler(async (event) => {
   const resp = await gqlClient.query<QueryResponse>("GetProperties", QUERY, {
     address,
   });
-  return resp.realEstateOwners.map((owner) => {
-    return {
-      ownerAddress: owner.ownerAddress,
-      realEstate: {
-        ...owner.realEstate,
-        mine: owner.ownerAddress === address,
-      },
-    };
-  });
+  return resp.realEstateOwners;
 });

@@ -10,9 +10,11 @@
     </p>
     <div v-if="data" class="flex flex-col gap-y-2">
       <property-card
-        v-for="{ realEstate } in data"
+        v-for="{ realEstate, price, seller } in data"
         :key="realEstate.id"
         :property="realEstate"
+        :price="price"
+        :mine="seller === account?.address"
         buyable
         @buy="buy(realEstate.tokenId)"
       />
@@ -21,6 +23,7 @@
 </template>
 <script lang="ts" setup>
 const { data, status } = useFetch("/api/properties");
+const { data: account } = useFetch("/api/wallet");
 
 const buy = async (id: string) => {
   console.log(`Buying property with id ${id}`);

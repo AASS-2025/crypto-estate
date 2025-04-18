@@ -14,6 +14,7 @@
         v-for="{ realEstate } in data"
         :key="realEstate.id"
         :property="realEstate"
+        :mine="true"
         sellable
       />
     </div>
