@@ -25,5 +25,7 @@ export default defineNuxtConfig({
       redirectUrl: "",
     },
     gqlHost: "https://api.spacex.land/graphql",
+    keyManagementApi: "http://localhost:3001",
+    supabaseInstance: "xkxkxkxkkx",
   },
 });
