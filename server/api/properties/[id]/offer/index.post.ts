@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     });
   }
   const { getAccount, getAddress } = useViemService();
-  const { createOffer } = useMarketService();
+  const { createOffer } = useMarketService(event);
   const { isApprovedForMarket, approveForMarket } = useRealEstateService();
 
   const privateKey = wallet.private_key as Hex;
@@ -55,6 +55,10 @@ export default defineEventHandler(async (event) => {
       });
     }
   }
-
-  return await createOffer(account, tokenId, body.amount);
+  console.log("Creating offer...", {
+    account: account.address,
+    tokenId,
+    price: body.amount,
+  });
+  return await createOffer(tokenId, body.amount);
 });

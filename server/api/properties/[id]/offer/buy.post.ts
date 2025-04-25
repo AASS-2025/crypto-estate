@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     });
   }
   const { getAccount } = useViemService();
-  const { buyOffer } = useMarketService();
+  const { buyOffer } = useMarketService(event);
 
   const privateKey = wallet.private_key as Hex;
   const account = getAccount(privateKey);

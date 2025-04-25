@@ -1,10 +1,12 @@
 import RealEstateMarketABI, {
   REAL_ESTATE_MARKET_ADDRESS,
 } from "~~/shared/abi/RealEstateMarketABI";
+import type { H3Event } from "h3";
 import { useViemService } from "./viem_service";
 import type { Account } from "viem";
-import { REAL_ESTATE_ADDRESS } from "~~/shared/abi/RealEstateABI";
 import consola from "consola";
+import { ofetch } from "ofetch";
+import { getAuthCookie } from "~~/shared/utils/supa";
 
 const logger = consola.create({
   defaults: {
@@ -12,29 +14,37 @@ const logger = consola.create({
   },
 });
 
-export function useMarketService() {
+const RUNTIME_CONFIG = useRuntimeConfig();
+
+const chainSystemApi = ofetch.create({
+  baseURL: RUNTIME_CONFIG.chainSystemApi,
+});
+
+type CreateOfferResponse = {
+  message: string;
+  transactionHash: string;
+};
+
+export function useMarketService(event: H3Event) {
   const { client } = useViemService();
 
-  const createOffer = async (
-    account: Account,
-    tokenId: bigint,
-    price: bigint
-  ) => {
-    logger.info("Creating offer", {
-      tokenId,
-      price,
-    });
-    const { request } = await client.simulateContract({
-      address: REAL_ESTATE_MARKET_ADDRESS,
-      abi: RealEstateMarketABI,
-      functionName: "createOffer",
-      args: [tokenId, REAL_ESTATE_ADDRESS, price],
-      account,
-    });
-    const resp = await client.writeContract(request);
-    logger.success("Offer created", {
-      resp,
-    });
+  const authCookie = getAuthCookie(event);
+  console.log("Auth cookie", authCookie);
+
+  const createOffer = async (tokenId: bigint, amount: bigint) => {
+    const resp = await chainSystemApi<CreateOfferResponse>(
+      `/properties/${tokenId}/offer`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Cookie: authCookie,
+        },
+        body: {
+          amount: amount.toString(),
+        },
+      }
+    );
     return resp;
   };
 

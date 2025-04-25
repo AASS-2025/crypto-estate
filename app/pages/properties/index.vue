@@ -9,7 +9,7 @@
     <p v-if="data && data.length === 0">
       You have not listed any properties yet
     </p>
-    <div v-if="data && account" class="flex gap-y-2">
+    <div v-if="data && account" class="flex flex-col gap-y-2">
       <property-card
         v-for="{ realEstate } in data"
         :key="realEstate.id"

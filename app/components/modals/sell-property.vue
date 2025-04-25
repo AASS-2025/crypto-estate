@@ -1,6 +1,6 @@
 <template>
   <UModal v-model="modalState" class="flex items-center justify-center">
-    <UButton class="cursor-pointer w-full" label="Sell" />
+    <UButton class="cursor-pointer w-full" label="Create offer" />
     <template #content>
       <UForm
         :schema="schema"
@@ -78,7 +78,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   // BigInt amount from ETH to Wei
   const amount = ethToWei(event.data.propertyPrice);
   try {
-    const res = await $fetch(`/api/properties/${event.data.tokenId}/sell`, {
+    const res = await $fetch(`/api/properties/${event.data.tokenId}/offer`, {
       method: "POST",
       body: {
         amount,
