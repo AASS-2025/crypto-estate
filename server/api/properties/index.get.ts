@@ -4,7 +4,7 @@ import type { OfferWithRealEstate } from "~~/shared/types/property";
 
 const QUERY = `
 query GetOffers {
-  offers(orderBy: timestamp_DESC)  {
+  offers(orderBy: timestamp_DESC, where: {status_eq: active})  {
     id
     price
     blockNumber

@@ -1,11 +1,10 @@
-import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
-import type { Hex } from "viem";
-import { useMarketService } from "~~/server/services/market_service";
-import { useViemService } from "~~/server/services/viem_service";
+import {serverSupabaseUser } from "#supabase/server";
+import { useCamundaMarketService } from "~~/server/services/camunda_market_service";
 import { buyOfferValidator } from "~~/server/validators/offer_validator";
 
 export default defineEventHandler(async (event) => {
   const user = await serverSupabaseUser(event);
+  const marketService = useCamundaMarketService();
   if (!user) {
     throw createError({
       statusCode: 401,
@@ -13,33 +12,29 @@ export default defineEventHandler(async (event) => {
     });
   }
   const body = await readValidatedBody(event, buyOfferValidator.parse);
-  const rawTokenId = getRouterParam(event, "id");
-  if (!rawTokenId) {
+  const rawOfferId = getRouterParam(event, "id");
+  if (!rawOfferId) {
     throw createError({
       statusCode: 400,
       statusMessage: "TokenId is required",
     });
   }
   // Check if tokenId is valid BigInt
-  const tokenId = BigInt(rawTokenId);
-  const client = await serverSupabaseClient<Database>(event);
-  // Check if wallet already exists
-  const { data: wallet } = await client
-    .from("wallets")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-  if (!wallet) {
+  const offerId = BigInt(rawOfferId);
+  try {
+    const processId = await marketService.startBuyOfferProcess(
+      user.id,
+      offerId,
+    );
+    return {
+      success: true,
+      processInstanceId: processId,
+      message: "Offer purchase process started"
+    };
+  } catch (error) {
     throw createError({
-      statusCode: 404,
-      statusMessage: "Wallet not found",
+      statusCode: 500,
+      statusMessage: "Failed to buy offer with error: " + error.message
     });
   }
-  const { getAccount } = useViemService();
-  const { buyOffer } = useMarketService();
-
-  const privateKey = wallet.private_key as Hex;
-  const account = getAccount(privateKey);
-
-  return await buyOffer(account, tokenId, body.price);
 });
