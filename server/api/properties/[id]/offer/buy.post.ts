@@ -1,10 +1,10 @@
 import {serverSupabaseUser } from "#supabase/server";
-import { useCamundaMarketService } from "~~/server/services/camunda_market_service";
+import { useKafkaMarketService } from "~~/server/services/kafka_market_service";
 import { buyOfferValidator } from "~~/server/validators/offer_validator";
 
 export default defineEventHandler(async (event) => {
   const user = await serverSupabaseUser(event);
-  const marketService = useCamundaMarketService();
+  const marketService = useKafkaMarketService();
   if (!user) {
     throw createError({
       statusCode: 401,
@@ -22,9 +22,9 @@ export default defineEventHandler(async (event) => {
   // Check if tokenId is valid BigInt
   const offerId = BigInt(rawOfferId);
   try {
-    const processId = await marketService.startBuyOfferProcess(
-      user.id,
-      offerId,
+    const processId = await marketService.startBuyMarketOffer(
+      offerId.toString(),
+      user.id
     );
     return {
       success: true,
