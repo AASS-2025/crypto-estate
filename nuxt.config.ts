@@ -23,7 +23,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       redirectUrl: "",
-      camundaApiUrl: process.env.CAMUNDA_API_URL || "http://localhost:8080/engine-rest",
     },
     gqlHost: "https://api.spacex.land/graphql",
     keyManagementApi: "http://localhost:3001",

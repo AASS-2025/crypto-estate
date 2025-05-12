@@ -59,13 +59,14 @@ export function useKafkaMarketService() {
       if (!offerValid) {
         throw new Error("Offer is not valid");
       }
-      return produceMessage(TOPICS.BUY_OFFER_DATA_VALIDATED, {
+      await produceMessage(TOPICS.BUY_OFFER_DATA_VALIDATED, {
         processId,
         offerId: offerId.toString(),
         userId,
         price,
         timestamp: new Date().toISOString()
       });
+      return processId;
     } catch (error) {
       console.error("Error validating offer:", error);
     

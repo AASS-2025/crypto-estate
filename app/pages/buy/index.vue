@@ -43,56 +43,46 @@ const { data: account } = useFetch("/api/wallet");
 const config = useRuntimeConfig();
 const toast = useToast();
 const loading = ref(false);
-const pollingInterval = ref(null);
+const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
-const pollProcessStatus = async (processInstanceId) => {
+const pollProcessStatus = async (processInstanceId: string) => {
   if (!processInstanceId) return;
   
   try {
-    const camundaApiUrl = config.public.camundaApiUrl;
-    const response = await fetch(
-      `${camundaApiUrl}/history/variable-instance?processInstanceId=${processInstanceId}`,
-      { method: 'GET' }
-    );
+    const resp = await $fetch(`/api/transactions/${processInstanceId}/process-id`, {
+      method: "GET",
+    });
+    console.log("Polling response:", resp);
+    if (!resp) return;
+    if (resp.status=='success') {
+      stopPolling();
+      loading.value = false;
+      await refresh();
 
-    const variables = await response.json();
-    const transactionStatus = variables.find(
-      (variable) => variable.name === 'transactionStatus'
-    );
-
-    
-    if (transactionStatus) {
-      if (transactionStatus.value === 'success') {
-        stopPolling();
-        loading.value = false;
-        await refresh();
-
-        toast.add({
-          title: "Transaction Complete",
-          description: "Property purchase was successful!",
-          color: "success",
-        });
-      } 
-      else{
-        stopPolling();
-        loading.value = false;
-        
-        toast.add({
-          title: "Transaction Failed",
-          description: "Property purchase failed. Please try again.",
-          color: "error",
-        });
-      }
+      toast.add({
+        title: "Transaction Complete",
+        description: "Property purchase was successful!",
+        color: "success",
+      });
+    } 
+    else{
+      stopPolling();
+      loading.value = false;
+      
+      toast.add({
+        title: "Transaction Failed",
+        description: "Property purchase failed. Please try again.",
+        color: "error",
+      });
     }
   } catch (error) {
     console.error("Error polling process status:", error);
   }
 };
 
-const startPolling = (processInstanceId) => {
+const startPolling = (processInstanceId: string) => {
   // Make sure to clear any existing interval first
   stopPolling();
-  
   // Create a closure that captures the processInstanceId
   pollingInterval.value = setInterval(() => {
     pollProcessStatus(processInstanceId);
