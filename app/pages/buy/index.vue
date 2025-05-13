@@ -10,14 +10,14 @@
     </p>
     <div v-if="data" class="flex flex-col gap-y-2">
       <property-card
-        v-for="{ realEstate, price, seller } in data"
+        v-for="{ realEstate, price, seller, id } in data"
         :key="realEstate.id"
         :property="realEstate"
         :price="price"
         :mine="seller === account?.address.toLowerCase()"
         :owner="seller"
         buyable
-        @buy="buy(realEstate.tokenId, price)"
+        @buy="buy(id, price)"
         @remove-offer="removeOffer(realEstate.tokenId)"
       />
     </div>

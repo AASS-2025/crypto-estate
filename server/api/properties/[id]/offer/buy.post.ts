@@ -13,15 +13,15 @@ export default defineEventHandler(async (event) => {
     });
   }
   const body = await readValidatedBody(event, buyOfferValidator.parse);
-  const rawTokenId = getRouterParam(event, "id");
-  if (!rawTokenId) {
+  const rawOfferId = getRouterParam(event, "id");
+  if (!rawOfferId) {
     throw createError({
       statusCode: 400,
       statusMessage: "TokenId is required",
     });
   }
   // Check if tokenId is valid BigInt
-  const tokenId = BigInt(rawTokenId);
+  const offerId = BigInt(rawOfferId);
   const client = await serverSupabaseClient<Database>(event);
   // Check if wallet already exists
   const { data: wallet } = await client
@@ -41,5 +41,5 @@ export default defineEventHandler(async (event) => {
   const privateKey = wallet.private_key as Hex;
   const account = getAccount(privateKey);
 
-  return await buyOffer(account, tokenId, body.price);
+  return await buyOffer(account, offerId, body.price);
 });
