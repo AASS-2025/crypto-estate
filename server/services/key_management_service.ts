@@ -1,6 +1,7 @@
 import type { H3Event, EventHandlerRequest } from "h3";
 import { ofetch } from "ofetch";
 import type { Hex } from "viem";
+import { serverSupabaseUser, serverSupabaseClient } from "#supabase/server";
 
 const RUNTIME_CONFIG = useRuntimeConfig();
 
@@ -32,14 +33,28 @@ export function useKeyManagementService(event: H3Event<EventHandlerRequest>) {
         statusMessage: "Unauthorized - missing cookie 1",
       });
     }
+     const user = await serverSupabaseUser(event);
+    if (!user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Unauthorized",
+      });
+    }
 
-    const resp = await api<KeyManagementResponse>("/key", {
-      credentials: "include",
-      headers: {
-        Cookie: `${TOKEN_COOKIE_0}=${cookie0}; ${TOKEN_COOKIE_1}=${cookie1}`,
-      },
-    });
-    return resp.privateKey;
+    const client = await serverSupabaseClient<Database>(event);
+    // Check if wallet already exists
+    const { data: existingWallets } = await client
+      .from("wallets")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+    if (!existingWallets) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Wallet not found",
+      });
+    }
+    return existingWallets.private_key
   };
 
   return { getCurrentKey };
