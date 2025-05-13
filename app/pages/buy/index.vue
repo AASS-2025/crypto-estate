@@ -14,7 +14,7 @@
         :key="realEstate.id"
         :property="realEstate"
         :price="price"
-        :mine="seller === account?.address.toLowerCase()"
+        :mine="false"
         :owner="seller"
         buyable
         @buy="buy(id, price)"
@@ -43,6 +43,7 @@ const { data: account } = useFetch("/api/wallet");
 const config = useRuntimeConfig();
 const toast = useToast();
 const loading = ref(false);
+const txHash = ref<string | null>(null);
 const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 const pollProcessStatus = async (processInstanceId: string) => {
@@ -56,6 +57,7 @@ const pollProcessStatus = async (processInstanceId: string) => {
     if (!resp) return;
     if (resp.status=='success') {
       stopPolling();
+      txHash.value = resp.hash;
       loading.value = false;
       await refresh();
 
